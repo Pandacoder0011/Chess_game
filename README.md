@@ -30,7 +30,7 @@ A modern, real-time multiplayer chess application built with Node.js, Express, a
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Pandacode0011/Chess_game.git
+   git clone https://github.com/Pandacoder0011/Chess_game.git
    cd Chess_game
    ```
 
@@ -211,10 +211,10 @@ This project is licensed under the ISC License.
 
 ## 👤 Author
 
-**Pandacode0011**
+**Pandacoder0011**
 
-- GitHub: [@Pandacode0011](https://github.com/Pandacode0011)
-- Repository: [Chess_game](https://github.com/Pandacode0011/Chess_game)
+- GitHub: [@Pandacoder0011](https://github.com/Pandacoder0011)
+- Repository: [Chess_game](https://github.com/Pandacoder0011/Chess_game)
 
 ## 🙏 Acknowledgments
 
@@ -224,7 +224,7 @@ This project is licensed under the ISC License.
 
 ## 📞 Support
 
-If you have any questions or issues, please open an issue on the [GitHub repository](https://github.com/Pandacode0011/Chess_game/issues).
+If you have any questions or issues, please open an issue on the [GitHub repository](https://github.com/Pandacoder0011/Chess_game/issues).
 
 ---
 
