@@ -1,0 +1,325 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    transition: all 0.5s ease;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.6s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.game-wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr 200px;
+    gap: 20px;
+    align-items: start;
+}
+
+.info-panel, .moves-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.info-panel:hover, .moves-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.info-box {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.info-box:hover {
+    background: #e9ecef;
+}
+
+.info-box:last-child {
+    margin-bottom: 0;
+}
+
+.info-text {
+    color: #555;
+    font-size: 0.95em;
+    margin: 10px 0;
+    padding: 8px;
+    background: white;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.info-text:hover {
+    background: #f0f0f0;
+    border-left-color: #764ba2;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.chessboard {
+    display: inline-grid;
+    grid-template-columns: repeat(8, 75px);
+    grid-template-rows: repeat(8, 75px);
+    gap: 0;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    justify-self: center;
+    animation: boardAppear 0.6s ease;
+}
+
+@keyframes boardAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.square {
+    width: 75px;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    cursor: grab;
+    position: relative;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.square.light {
+    background-color: #f0d9b5;
+}
+
+.square.dark {
+    background-color: #b58863;
+}
+
+.square.highlight {
+    background-color: #baca44 !important;
+    animation: pulse 0.6s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: inset 0 0 0 0 rgba(186, 202, 68, 0.5);
+    }
+    50% {
+        box-shadow: inset 0 0 0 3px rgba(186, 202, 68, 0.3);
+    }
+}
+
+.square.valid-move {
+    box-shadow: inset 0 0 0 2px #52b788;
+    animation: validMoveGlow 0.4s ease;
+}
+
+@keyframes validMoveGlow {
+    from {
+        box-shadow: inset 0 0 0 0 #52b788;
+    }
+    to {
+        box-shadow: inset 0 0 0 2px #52b788;
+    }
+}
+
+.piece {
+    cursor: grab;
+    transition: all 0.2s;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+}
+
+.piece.white {
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.piece.black {
+    color: #333;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.piece:active {
+    cursor: grabbing;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+.piece.dragging {
+    opacity: 0.6;
+    z-index: 1000;
+    animation: drag 0.2s ease;
+}
+
+@keyframes drag {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+
+.square:hover .piece {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+.moves-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+.move-entry {
+    padding: 10px;
+    margin: 8px 0;
+    background: white;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+    animation: slideIn 0.3s ease;
+    transition: all 0.2s;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.move-entry:hover {
+    background: #f0f0f0;
+    transform: translateX(5px);
+}
+
+.move-entry.white-move {
+    border-left-color: #555;
+    background: #f9f9f9;
+}
+
+.move-entry.black-move {
+    border-left-color: #999;
+    background: #f5f5f5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .game-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .chessboard {
+        grid-template-columns: repeat(8, 60px);
+        grid-template-rows: repeat(8, 60px);
+    }
+    
+    .square {
+        font-size: 2em;
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    
+    .chessboard {
+        grid-template-columns: repeat(8, 40px);
+        grid-template-rows: repeat(8, 40px);
+        padding: 5px;
+    }
+    
+    .square {
+        font-size: 1.5em;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .info-panel, .moves-panel {
+        padding: 15px;
+    }
+}
