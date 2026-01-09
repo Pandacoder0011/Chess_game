@@ -1,7 +1,12 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 const { Chess } = require("chess.js");
 const path = require('path');
 const { title } = require('process');
@@ -126,6 +131,21 @@ io.on('connection', (uniquesocket) => {
     // Add handler for board state requests
     uniquesocket.on("request_board_state", () => {
         uniquesocket.emit("boardstate", chess.fen());
+    });
+
+    // Handle game reset
+    uniquesocket.on("reset_game", () => {
+        // Only allow reset if user is a player (white or black)
+        if (uniquesocket.id === players.white || uniquesocket.id === players.black) {
+            console.log('Game reset requested by:', uniquesocket.id);
+            chess.reset();
+            // Broadcast reset to all clients
+            io.emit("boardstate", chess.fen());
+            io.emit("game_reset");
+            console.log('Game reset successful');
+        } else {
+            console.log('Reset denied - user is not a player');
+        }
     });
 
     uniquesocket.on('disconnect', () => {

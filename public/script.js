@@ -1,5 +1,36 @@
 // Socket.IO Initialization
-const socket = io();
+const socket = io({
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 5
+});
+
+// Socket.IO Connection Events
+socket.on('connect', () => {
+    console.log('Connected to server');
+    gameInfoElement.textContent = 'Connected to server';
+    // Request board state on connection
+    socket.emit("request_board_state");
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+    gameInfoElement.textContent = 'Disconnected from server';
+    gameStatusElement.textContent = 'Connection lost. Reconnecting...';
+});
+
+socket.on('connect_error', (error) => {
+    console.error('Connection error:', error);
+    gameInfoElement.textContent = 'Connection error. Please refresh the page.';
+    gameStatusElement.textContent = 'Failed to connect to server';
+});
+
+socket.on('reconnect', (attemptNumber) => {
+    console.log('Reconnected after', attemptNumber, 'attempts');
+    gameInfoElement.textContent = 'Reconnected to server';
+    socket.emit("request_board_state");
+});
 
 // Chess Game Initialization
 const chess = new Chess();
@@ -58,9 +89,22 @@ socket.on("spectatorRole", (role) => {
 // Socket.IO Event: Receive initial or updated board state
 socket.on("boardstate", (fen) => {
     console.log("Received board state:", fen);
-    chess.load(fen);
+    if (fen) {
+        chess.load(fen);
+        renderBoard();
+        updateGameInfo();
+    }
+});
+
+// Socket.IO Event: Game reset notification
+socket.on("game_reset", () => {
+    console.log("Game reset received from server");
+    moveHistory = [];
+    movesListElement.innerHTML = "";
+    chess.reset();
     renderBoard();
     updateGameInfo();
+    gameInfoElement.textContent = "Game has been reset";
 });
 
 // Socket.IO Event: Receive opponent's move
@@ -270,19 +314,28 @@ function clearHighlights() {
 function resetGame() {
     // Prevent spectators from resetting the game
     if (playerRole === "spectator") {
+        alert("Spectators cannot reset the game");
         return;
     }
+    
+    // Check if socket is connected
+    if (!socket.connected) {
+        alert("Not connected to server. Please refresh the page.");
+        return;
+    }
+    
     if (confirm("Reset the game? This cannot be undone!")) {
-        chess.reset();
+        // Emit reset to server first
+        socket.emit("reset_game");
+        // Clear local state
         moveHistory = [];
         movesListElement.innerHTML = "";
-        renderBoard();
-        updateGameInfo();
-        socket.emit("reset_game");
+        // Server will broadcast the reset, so we'll update on game_reset event
+        gameInfoElement.textContent = "Resetting game...";
     }
 }
 
-// Initial render
+// Initial render - render board immediately even before connection
 console.log("Initializing chess game...");
 playerRoleElement.textContent = "Connecting to server...";
 gameStatusElement.textContent = "Waiting for role assignment...";
@@ -291,5 +344,13 @@ const resetBtn = document.querySelector("#resetBtn");
 if (resetBtn) {
     resetBtn.style.display = "none";
 }
+// Render board immediately so it's visible
 renderBoard();
 updateGameInfo();
+
+// Add timeout to show connection status
+setTimeout(() => {
+    if (!socket.connected && playerRole === null) {
+        gameInfoElement.textContent = "Still connecting... If this persists, refresh the page.";
+    }
+}, 3000);
